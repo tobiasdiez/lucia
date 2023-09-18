@@ -1,5 +1,11 @@
 # @lucia-auth/oauth
 
+## 3.2.1
+
+### Patch changes
+
+- [#1132](https://github.com/lucia-auth/lucia/pull/1132) by [@KazuumiN](https://github.com/KazuumiN) : Fix link at `getLineUser()`
+
 ## 3.2.0
 
 ### Minor changes

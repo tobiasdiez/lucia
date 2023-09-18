@@ -1,5 +1,11 @@
 # lucia
 
+## 2.6.1
+
+### Patch changes
+
+- [#1134](https://github.com/lucia-auth/lucia/pull/1134) by [@giacomoferretti](https://github.com/giacomoferretti) : Fix unhandled rejection error when using `AuthRequest.validate()` and `AuthRequest.validateBearerToken()`
+
 ## 2.6.0
 
 ### Minor changes
