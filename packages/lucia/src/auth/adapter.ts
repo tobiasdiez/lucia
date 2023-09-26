@@ -18,7 +18,10 @@ export type Adapter = Readonly<
 
 export type UserAdapter = Readonly<{
 	getUser: (userId: string) => Promise<UserSchema | null>;
-	setUser: (user: UserSchema, key: KeySchema | null) => Promise<void>;
+	setUser: (
+		user: UserSchema,
+		key: KeySchema | null
+	) => Promise<UserSchema | void>;
 	updateUser: (
 		userId: string,
 		partialUser: Partial<UserSchema>
@@ -31,6 +34,8 @@ export type UserAdapter = Readonly<{
 	updateKey: (keyId: string, partialKey: Partial<KeySchema>) => Promise<void>;
 	deleteKey: (keyId: string) => Promise<void>;
 	deleteKeysByUserId: (userId: string) => Promise<void>;
+
+	userIdAutoCreate?: boolean;
 }>;
 
 export type SessionAdapter = Readonly<{

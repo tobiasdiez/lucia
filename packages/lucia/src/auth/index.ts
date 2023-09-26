@@ -268,15 +268,17 @@ export class Auth<_Configuration extends Configuration = any> {
 		} | null;
 		attributes: Lucia.DatabaseUserAttributes;
 	}): Promise<User> => {
-		const userId = options.userId ?? generateRandomString(15);
+		const userId =
+			options.userId ??
+			(this.adapter.userIdAutoCreate ? undefined : generateRandomString(15));
 		const userAttributes = options.attributes ?? {};
 		const databaseUser = {
-			...userAttributes,
+			...userAttributes
 			id: userId
 		} satisfies UserSchema;
 		if (options.key === null) {
-			await this.adapter.setUser(databaseUser, null);
-			return this.transformDatabaseUser(databaseUser);
+			const userReturned = await this.adapter.setUser(databaseUser, null);
+			return this.transformDatabaseUser(userReturned || databaseUser);
 		}
 		const keyId = createKeyId(
 			options.key.providerId,
@@ -285,12 +287,12 @@ export class Auth<_Configuration extends Configuration = any> {
 		const password = options.key.password;
 		const hashedPassword =
 			password === null ? null : await this.passwordHash.generate(password);
-		await this.adapter.setUser(databaseUser, {
+		const userReturned = await this.adapter.setUser(databaseUser, {
 			id: keyId,
 			user_id: userId,
 			hashed_password: hashedPassword
 		});
-		return this.transformDatabaseUser(databaseUser);
+		return this.transformDatabaseUser(userReturned || databaseUser);
 	};
 
 	public updateUserAttributes = async (

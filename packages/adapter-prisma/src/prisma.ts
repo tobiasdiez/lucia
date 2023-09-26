@@ -22,7 +22,8 @@ export const prismaAdapter = <_PrismaClient extends PrismaClient>(
 		user: ExtractModelNames<_PrismaClient>;
 		session: ExtractModelNames<_PrismaClient> | null;
 		key: ExtractModelNames<_PrismaClient>;
-	}
+	},
+	options?: { userIdAutoCreate?: boolean }
 ): InitializeAdapter<Adapter> => {
 	const getModels = () => {
 		if (!modelNames) {
@@ -44,6 +45,7 @@ export const prismaAdapter = <_PrismaClient extends PrismaClient>(
 
 	return (LuciaError) => {
 		return {
+			userIdAutoCreate: options?.userIdAutoCreate ?? false,
 			getUser: async (userId) => {
 				return await User.findUnique({
 					where: {
@@ -53,7 +55,7 @@ export const prismaAdapter = <_PrismaClient extends PrismaClient>(
 			},
 			setUser: async (user, key) => {
 				if (!key) {
-					await User.create({
+					return await User.create({
 						data: user
 					});
 					return;
@@ -61,7 +63,7 @@ export const prismaAdapter = <_PrismaClient extends PrismaClient>(
 				try {
 					// Userid is taken care of by prisma automatically
 					const { user_id: _, ...keyData } = key;
-					await User.create({
+					return await User.create({
 						data: {
 							keys: { create: [keyData] },
 							...user
@@ -69,8 +71,9 @@ export const prismaAdapter = <_PrismaClient extends PrismaClient>(
 					});
 				} catch (e) {
 					const error = e as Partial<PossiblePrismaError>;
-					if (error.code === "P2002" && error.message?.includes("`id`"))
+					if (error.code === "P2002" && error.message?.includes("`id`")) {
 						throw new LuciaError("AUTH_DUPLICATE_KEY_ID");
+					}
 					throw error;
 				}
 			},

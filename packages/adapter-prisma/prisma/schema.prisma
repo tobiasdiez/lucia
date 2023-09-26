@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id           String    @id @unique
+  id           String    @id @default(cuid())
   username     String    @unique
   auth_session Session[]
   keys         Key[]

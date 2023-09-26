@@ -7,7 +7,7 @@ import { prismaAdapter, transformPrismaSession } from "../src/prisma.js";
 import type { QueryHandler, TableQueryHandler } from "@lucia-auth/adapter-test";
 import type { SmartPrismaModel } from "../src/prisma.js";
 
-const client = new PrismaClient();
+const client = new PrismaClient({ log: ["info", "error", "warn"] });
 
 const createTableQueryHandler = (model: any): TableQueryHandler => {
 	const Model = model as SmartPrismaModel;
@@ -39,7 +39,9 @@ const queryHandler: QueryHandler = {
 	key: createTableQueryHandler(client.key)
 };
 
-const adapter = prismaAdapter(client)(LuciaError);
+const adapter = prismaAdapter(client, null, {
+	userIdAutoCreate: true
+})(LuciaError);
 
 await testAdapter(adapter, new Database(queryHandler));
 
